@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        /* CSS File */
+        body {
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .stopwatch {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .stopwatch h1 {
+            margin: 0 0 20px;
+        }
+
+        #display {
+            font-size: 48px;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .buttons button {
+            font-size: 16px;
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #007bff;
+            color: #fff;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .buttons button:hover {
+            background: #0056b3;
+        }
+
+        .buttons button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        #laps {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        #laps div {
+            background: #f1f1f1;
+            padding: 5px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="stopwatch">
+        <h1>Stopwatch</h1>
+        <div id="display">00:00:00</div>
+        <div class="buttons">
+            <button id="startStopBtn">Start</button>
+            <button id="resetBtn" disabled>Reset</button>
+            <button id="lapBtn" disabled>Lap</button>
+        </div>
+        <div id="laps"></div>
+    </div>
+    <script>
+        // JavaScript File
+        let startTime, updatedTime, difference, tInterval, savedTime = 0, running = false, lapCounter = 0;
+
+        const display = document.getElementById('display');
+        const startStopBtn = document.getElementById('startStopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const laps = document.getElementById('laps');
+
+        function startStop() {
+            if (!running) {
+                startTime = new Date().getTime() - savedTime;
+                tInterval = setInterval(getShowTime, 1000);
+                running = true;
+                startStopBtn.innerHTML = "Stop";
+                lapBtn.disabled = false;
+                resetBtn.disabled = false;
+            } else {
+                clearInterval(tInterval);
+                savedTime = new Date().getTime() - startTime;
+                running = false;
+                startStopBtn.innerHTML = "Start";
+            }
+        }
+
+        function reset() {
+            clearInterval(tInterval);
+            savedTime = 0;
+            running = false;
+            display.innerHTML = "00:00:00";
+            startStopBtn.innerHTML = "Start";
+            resetBtn.disabled = true;
+            lapBtn.disabled = true;
+            laps.innerHTML = "";
+            lapCounter = 0;
+        }
+
+        function lap() {
+            lapCounter++;
+            const lapTime = display.innerHTML;
+            const lapDiv = document.createElement('div');
+            lapDiv.innerHTML = `Lap ${lapCounter}: ${lapTime}`;
+            laps.appendChild(lapDiv);
+        }
+
+        function getShowTime() {
+            updatedTime = new Date().getTime();
+            difference = updatedTime - startTime;
+            
+            let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            
+            hours = (hours < 10) ? "0" + hours : hours;
+            minutes = (minutes < 10) ? "0" + minutes : minutes;
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+            
+            display.innerHTML = hours + ":" + minutes + ":" + seconds;
+        }
+
+        startStopBtn.addEventListener('click', startStop);
+        resetBtn.addEventListener('click', reset);
+        lapBtn.addEventListener('click', lap);
+    </script>
+</body>
+</html>
